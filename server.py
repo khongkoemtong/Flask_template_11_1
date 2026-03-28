@@ -37,10 +37,20 @@ def update():
     gender = request.form['update_gender']
     salary = request.form['update_salary']
 
+    file = request.files['update_image']
 
-    sql = "UPDATE users SET Name = %s,Age = %s,Gender = %s , Salary = %s Where id = %s"
+    if file :
+        end_name = os.path.splitext(file.filename)[1]
+        filename = str(uuid.uuid4())+end_name
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
 
-    cursor.execute(sql,(name,age,gender,salary,id))
+
+
+
+
+    sql = "UPDATE users SET Name = %s,Age = %s,Gender = %s , Salary = %s,image=%s Where id = %s"
+
+    cursor.execute(sql,(name,age,gender,salary,filename,id))
     conection.commit()
 
     return redirect(url_for('homepage'))
@@ -75,9 +85,6 @@ def insert():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
     
 
-        
-        
-
     sql = "INSERT INTO users (Name,Age,Gender,Salary,image) Values (%s,%s,%s,%s,%s)"
     cursor.execute(sql,(username,age,gender,salary,filename))
     conection.commit()
@@ -97,11 +104,6 @@ def delete():
     conection.commit()
 
     return redirect(url_for('homepage'))
-
-
-
-
-
 
 
 
