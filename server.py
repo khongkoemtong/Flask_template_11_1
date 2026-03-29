@@ -39,13 +39,15 @@ def update():
 
     file = request.files['update_image']
 
+
+    
+
     if file :
         end_name = os.path.splitext(file.filename)[1]
         filename = str(uuid.uuid4())+end_name
         file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
 
-
-
+        
 
 
     sql = "UPDATE users SET Name = %s,Age = %s,Gender = %s , Salary = %s,image=%s Where id = %s"
@@ -105,6 +107,22 @@ def delete():
 
     return redirect(url_for('homepage'))
 
+
+@app.route('/search',methods=['GET'])
+def search ():
+    conection = conect_db()
+    cursor = conection.cursor()
+
+
+    search = request.args.get('search')
+
+    if search :
+        cursor.execute("SELECT * FROM users WHERE name LIKE %s" ,  '%' + search+'%')
+    else:
+        cursor.execute("SELECT * FROM users")
+
+    user = cursor.fetchall()
+    return render_template('home.html',user=user)      
 
 
 
