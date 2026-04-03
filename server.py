@@ -38,10 +38,6 @@ def update():
     salary = request.form['update_salary']
 
     file = request.files['update_image']
-
-
-    
-
     if file :
         end_name = os.path.splitext(file.filename)[1]
         filename = str(uuid.uuid4())+end_name
@@ -123,6 +119,19 @@ def search ():
 
     user = cursor.fetchall()
     return render_template('home.html',user=user)      
+
+
+
+@app.route('/user')
+def user ():
+    conection = conect_db()
+    cursor = conection.cursor()
+
+    cursor.execute("SELECT * FROM users")
+    user = cursor.fetchall()
+    
+    return render_template('user.html',user=user)
+
 
 
 
