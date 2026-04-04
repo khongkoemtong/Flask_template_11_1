@@ -43,11 +43,7 @@ def update():
         filename = str(uuid.uuid4())+end_name
         file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
 
-        
-
-
     sql = "UPDATE users SET Name = %s,Age = %s,Gender = %s , Salary = %s,image=%s Where id = %s"
-
     cursor.execute(sql,(name,age,gender,salary,filename,id))
     conection.commit()
 
@@ -131,6 +127,52 @@ def user ():
     user = cursor.fetchall()
     
     return render_template('user.html',user=user)
+
+
+@app.route('/register',methods=["POST","GET"])
+def register():
+    if request.method=="POST":
+        connection = conect_db()
+        cursor = connection.cursor()
+
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+
+        sql = "INSERT INTO accounts (username,email,password) values (%s,%s,%s)"
+        cursor.execute(sql,(username,email,password))
+        connection.commit()
+
+        return redirect(url_for('user'))
+    
+    return render_template('register.html')
+    
+@app.route('/login' , methods=["POST","GET"])
+def login ():
+    error =''
+    if request.method=="POST":
+       
+        connection = conect_db()
+        cursor = connection.cursor()
+
+        email = request.form['email'] 
+        password = request.form['password']
+
+        sql = "SELECT * FROM accounts WHERE email =%s AND password = %s"
+
+        cursor.execute(sql,(email,password))
+
+        user = cursor.fetchone()   
+
+        if not user :
+            error = "can not find your account bro  !"
+            return render_template('login.html',error=error)
+        
+        return redirect(url_for('homepage'))
+    
+    return render_template('login.html',erorr=error)
+
+
 
 
 
